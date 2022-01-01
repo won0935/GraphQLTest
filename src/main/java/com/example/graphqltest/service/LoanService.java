@@ -1,6 +1,7 @@
 package com.example.graphqltest.service;
 
-import com.example.graphqltest.repository.LoanEntity;
+import com.example.graphqltest.mapper.LoanMapper;
+import com.example.graphqltest.model.LoanModel;
 import com.example.graphqltest.repository.LoanRepository;
 import io.leangen.graphql.annotations.GraphQLContext;
 import io.leangen.graphql.annotations.GraphQLMutation;
@@ -9,8 +10,9 @@ import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
-import java.util.Optional;
+import java.util.NoSuchElementException;
 
 @Service
 @GraphQLApi
@@ -18,10 +20,12 @@ import java.util.Optional;
 public class LoanService {
 
     private final LoanRepository loanRepository;
+    private final LoanMapper loanMapper;
 
+    @Transactional
     @GraphQLQuery(name = "loans")
-    public List<LoanEntity> getLoans() {
-        return loanRepository.findAll();
+    public List<LoanModel> getLoans() {
+        return loanMapper.toModel(loanRepository.findAll());
     }
 
     //{
@@ -30,25 +34,44 @@ public class LoanService {
     //		title
     //	}
     //}
+    @Transactional
+
     @GraphQLQuery(name = "loan")
-    public Optional<LoanEntity> getLoanById(Long id) {
-        return loanRepository.findById(id);
+    public LoanModel getLoanById(Long id) {
+        return loanMapper.toModel(loanRepository.findById(id).orElseThrow(NoSuchElementException::new));
     }
 
-    //mutation{
-    //	savePost(post:{title:"title"}){
-    //		id
-    //		title
-    //	}
-    //}
+//    mutation{
+//        saveLoan(post:
+//        {
+//            id: 343
+//            name :"sss",
+//            loanTagList:[
+//               {
+//                        type: "test1",
+//                        description :"xxx"
+//                }
+//                {
+//                        type: "test2",
+//                        description :"yyy"
+//                }
+//                {
+//                        type: "test3",
+//                        description :"zzz"
+//                }
+//            ]
+//        })
+//    }
+    @Transactional
     @GraphQLMutation(name = "saveLoan")
-    public LoanEntity saveLoan(LoanEntity post) {
-        return loanRepository.save(post);
+    public LoanModel saveLoan(LoanModel post) {
+        return loanMapper.toModel(loanRepository.save(loanMapper.toEntity(post)));
     }
 
     //mutation{
     //	deletePost(id:1)
     //}
+    @Transactional
     @GraphQLMutation(name = "deleteLoan")
     public void deleteLoan(Long id) {
         loanRepository.deleteById(id);
@@ -60,9 +83,9 @@ public class LoanService {
     //		isGood
     //	}
     //}
+    @Transactional
     @GraphQLQuery(name = "isGood")
-    public boolean isGood(@GraphQLContext LoanEntity entity) {
+    public boolean isGood(@GraphQLContext LoanModel entity) {
         return !entity.getName().equals("title1");
     }
-
 }
