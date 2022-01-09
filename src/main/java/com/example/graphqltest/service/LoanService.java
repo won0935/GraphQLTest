@@ -1,31 +1,25 @@
 package com.example.graphqltest.service;
 
-import com.example.graphqltest.mapper.LoanMapper;
+import com.example.graphqltest.fegin.TestClient;
 import com.example.graphqltest.model.LoanModel;
-import com.example.graphqltest.repository.LoanRepository;
-import io.leangen.graphql.annotations.GraphQLContext;
 import io.leangen.graphql.annotations.GraphQLMutation;
 import io.leangen.graphql.annotations.GraphQLQuery;
 import io.leangen.graphql.spqr.spring.annotations.GraphQLApi;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 @Service
 @GraphQLApi
 @RequiredArgsConstructor
 public class LoanService {
 
-    private final LoanRepository loanRepository;
-    private final LoanMapper loanMapper;
+    private final TestClient testClient;
 
-    @Transactional
     @GraphQLQuery(name = "loans")
     public List<LoanModel> getLoans() {
-        return loanMapper.toModel(loanRepository.findAll());
+        return testClient.loans();
     }
 
     //{
@@ -34,14 +28,12 @@ public class LoanService {
     //		title
     //	}
     //}
-    @Transactional
-
     @GraphQLQuery(name = "loan")
     public LoanModel getLoanById(Long id) {
-        return loanMapper.toModel(loanRepository.findById(id).orElseThrow(NoSuchElementException::new));
+        return testClient.getLoanById(id);
     }
 
-//    mutation{
+    //    mutation{
 //        saveLoan(post:
 //        {
 //            id: 343
@@ -62,19 +54,17 @@ public class LoanService {
 //            ]
 //        })
 //    }
-    @Transactional
     @GraphQLMutation(name = "saveLoan")
     public LoanModel saveLoan(LoanModel post) {
-        return loanMapper.toModel(loanRepository.save(loanMapper.toEntity(post)));
+        return testClient.saveLoan(post);
     }
 
     //mutation{
     //	deletePost(id:1)
     //}
-    @Transactional
     @GraphQLMutation(name = "deleteLoan")
     public void deleteLoan(Long id) {
-        loanRepository.deleteById(id);
+        testClient.deleteLoan(id);
     }
 
     //{
@@ -83,9 +73,9 @@ public class LoanService {
     //		isGood
     //	}
     //}
-    @Transactional
-    @GraphQLQuery(name = "isGood")
-    public boolean isGood(@GraphQLContext LoanModel entity) {
-        return !entity.getName().equals("title1");
-    }
+//    @Transactional
+//    @GraphQLQuery(name = "isGood")
+//    public boolean isGood(@GraphQLContext LoanModel entity) {
+//        return !entity.getName().equals("title1");
+//    }
 }

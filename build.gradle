@@ -18,6 +18,18 @@ repositories {
     mavenCentral()
 }
 
+//스프링 클라우드
+ext {
+    set('springCloudVersion', "2021.0.0")
+}
+
+//스프링 클라우드
+dependencyManagement {
+    imports {
+        mavenBom "org.springframework.cloud:spring-cloud-dependencies:${springCloudVersion}"
+    }
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter'
 
@@ -26,23 +38,15 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
 
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
-    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-    runtimeOnly 'mysql:mysql-connector-java'
+    implementation "org.springframework.boot:spring-boot-starter-web"
 
     // GraphQL
     implementation 'com.graphql-java:graphql-spring-boot-starter:5.0.2'
     implementation 'com.graphql-java:graphql-java-tools:5.2.4'
     implementation 'io.leangen.graphql:graphql-spqr-spring-boot-starter:0.0.4'
 
-    // MapStruct
-    implementation 'org.mapstruct:mapstruct:1.4.1.Final'
-    annotationProcessor 'org.mapstruct:mapstruct-processor:1.4.1.Final'
-
-    //jpa 쿼리 로그
-    implementation 'com.github.gavlyukovskiy:p6spy-spring-boot-starter:1.5.8'
-
+    //Feign Client
+    implementation 'org.springframework.cloud:spring-cloud-starter-openfeign'
 }
 
 test {

@@ -1,19 +1,15 @@
 package com.example.graphqltest;
 
-import com.example.graphqltest.model.LoanModel;
-import com.example.graphqltest.service.LoanService;
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
+import org.springframework.cloud.openfeign.EnableFeignClients;
 
-import java.util.stream.Stream;
-
+@EnableFeignClients // Feign Client를 사용할 것
 @SpringBootApplication
-public class GraphQlTestApplication {
+public class SenderProjectApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(GraphQlTestApplication.class, args);
+        SpringApplication.run(SenderProjectApplication.class, args);
     }
 
 //    @Bean
